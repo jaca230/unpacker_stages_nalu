@@ -48,6 +48,7 @@ void ByteStreamToNaluPacketCollectionStage::Process() {
 
     // Get repeat_count from the referenced product
     int repeat_count = 0;
+
     if (!repeat_count_product_name_.empty() && !repeat_count_product_member_.empty()) {
         auto repeat_handle = getDataProductManager()->checkoutRead(repeat_count_product_name_);
         if (!repeat_handle) {
@@ -61,8 +62,24 @@ void ByteStreamToNaluPacketCollectionStage::Process() {
             return;
         }
 
-        // Assuming int here, adjust if needed
-        repeat_count = *static_cast<const int*>(ptr);
+        if (type == "int" || type == "Int_t") repeat_count = *static_cast<const int*>(ptr);
+        else if (type == "unsigned int" || type == "UInt_t" || type == "uint32_t") repeat_count = static_cast<int>(*static_cast<const unsigned int*>(ptr));
+        else if (type == "short" || type == "Short_t") repeat_count = static_cast<int>(*static_cast<const short*>(ptr));
+        else if (type == "unsigned short" || type == "UShort_t" || type == "uint16_t") repeat_count = static_cast<int>(*static_cast<const unsigned short*>(ptr));
+        else if (type == "char" || type == "Char_t") repeat_count = static_cast<int>(*static_cast<const char*>(ptr));
+        else if (type == "unsigned char" || type == "UChar_t" || type == "uint8_t") repeat_count = static_cast<int>(*static_cast<const unsigned char*>(ptr));
+        else if (type == "long" || type == "Long_t" || type == "int64_t") repeat_count = static_cast<int>(*static_cast<const long*>(ptr));
+        else if (type == "unsigned long" || type == "ULong_t" || type == "uint64_t") repeat_count = static_cast<int>(*static_cast<const unsigned long*>(ptr));
+        else if (type == "Long64_t") repeat_count = static_cast<int>(*static_cast<const Long64_t*>(ptr));
+        else if (type == "ULong64_t") repeat_count = static_cast<int>(*static_cast<const ULong64_t*>(ptr));
+        else if (type == "float" || type == "Float_t") repeat_count = static_cast<int>(*static_cast<const float*>(ptr));
+        else if (type == "double" || type == "Double_t") repeat_count = static_cast<int>(*static_cast<const double*>(ptr));
+        else if (type == "bool" || type == "Bool_t") repeat_count = static_cast<int>(*static_cast<const bool*>(ptr));
+        else {
+            spdlog::error("[{}] Unsupported repeat count type '{}'", Name(), type);
+            return;
+        }
+
         spdlog::debug("[{}] repeat_count = {} from '{}.{}'", Name(), repeat_count, repeat_count_product_name_, repeat_count_product_member_);
     } else {
         spdlog::warn("[{}] No repeat count config given, defaulting to 0", Name());
