@@ -23,33 +23,52 @@ void NaluEventFormingStage::OnInit() {
 void NaluEventFormingStage::Process() {
     auto dpm = getDataProductManager();
 
-    if (!dpm->hasProduct(headerName_) || !dpm->hasProduct(footerName_) || !dpm->hasProduct(packetCollectionName_)) {
-        spdlog::warn("[{}] Missing required input products; skipping", Name());
+    if (!dpm->hasProduct(headerName_)) {
+        spdlog::warn("[{}] Missing input product: {}", Name(), headerName_);
+        return;
+    }
+    if (!dpm->hasProduct(footerName_)) {
+        spdlog::warn("[{}] Missing input product: {}", Name(), footerName_);
+        return;
+    }
+    if (!dpm->hasProduct(packetCollectionName_)) {
+        spdlog::warn("[{}] Missing input product: {}", Name(), packetCollectionName_);
         return;
     }
 
     auto headerProduct = dpm->extractProduct(headerName_);
-    auto footerProduct = dpm->extractProduct(footerName_);
-    auto packetsProduct = dpm->extractProduct(packetCollectionName_);
+    if (!headerProduct) {
+        spdlog::error("[{}] Failed to extract product: {}", Name(), headerName_);
+        return;
+    }
 
-    if (!headerProduct || !footerProduct || !packetsProduct) {
-        spdlog::error("[{}] Failed to extract one or more input products", Name());
+    auto footerProduct = dpm->extractProduct(footerName_);
+    if (!footerProduct) {
+        spdlog::error("[{}] Failed to extract product: {}", Name(), footerName_);
+        return;
+    }
+
+    auto packetsProduct = dpm->extractProduct(packetCollectionName_);
+    if (!packetsProduct) {
+        spdlog::error("[{}] Failed to extract product: {}", Name(), packetCollectionName_);
         return;
     }
 
     auto headerPtr = dynamic_cast<dataProducts::NaluEventHeader*>(headerProduct->getObject());
-    auto footerPtr = dynamic_cast<dataProducts::NaluEventFooter*>(footerProduct->getObject());
-    auto packetsList = dynamic_cast<TList*>(packetsProduct->getObject());
+    if (!headerPtr) {
+        spdlog::error("[{}] Failed to cast product '{}' to NaluEventHeader*", Name(), headerName_);
+        return;
+    }
 
-    if (!headerPtr || !footerPtr || !packetsList) {
-        spdlog::error("[{}] Failed to cast input products to correct types", Name());
+    auto footerPtr = dynamic_cast<dataProducts::NaluEventFooter*>(footerProduct->getObject());
+    if (!footerPtr) {
+        spdlog::error("[{}] Failed to cast product '{}' to NaluEventFooter*", Name(), footerName_);
         return;
     }
 
     auto packetsCollectionPtr = dynamic_cast<dataProducts::NaluPacketCollection*>(packetsProduct->getObject());
-
     if (!packetsCollectionPtr) {
-        spdlog::error("[{}] Failed to cast packets product to NaluPacketCollection", Name());
+        spdlog::error("[{}] Failed to cast product '{}' to NaluPacketCollection*", Name(), packetCollectionName_);
         return;
     }
 
@@ -67,5 +86,7 @@ void NaluEventFormingStage::Process() {
 
     dpm->addOrUpdate(outputName_, std::move(product));
 
-    spdlog::debug("Built NaluEvent with {} packets", event.packets.GetPackets().size());
+    spdlog::debug("[{}] Built NaluEvent with {} packets", Name(), event.packets.GetPackets().size());
 }
+
+

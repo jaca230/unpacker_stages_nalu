@@ -30,26 +30,48 @@ void NaluPacketCollectionFormingStage::Process() {
         const std::string payloadName = payloadPrefix_ + "_" + std::to_string(index);
         const std::string footerName = footerPrefix_ + "_" + std::to_string(index);
 
-        if (!dpm->hasProduct(headerName) || !dpm->hasProduct(payloadName) || !dpm->hasProduct(footerName)) {
-            spdlog::debug("[{}] Missing product triplet at index {}, halting early", Name(), index);
+        if (!dpm->hasProduct(headerName)) {
+            spdlog::debug("[{}] Missing header product '{}' at index {}, halting", Name(), headerName, index);
+            break;
+        }
+        if (!dpm->hasProduct(payloadName)) {
+            spdlog::debug("[{}] Missing payload product '{}' at index {}, halting", Name(), payloadName, index);
+            break;
+        }
+        if (!dpm->hasProduct(footerName)) {
+            spdlog::debug("[{}] Missing footer product '{}' at index {}, halting", Name(), footerName, index);
             break;
         }
 
         auto headerProduct = dpm->extractProduct(headerName);
+        if (!headerProduct) {
+            spdlog::error("[{}] Failed to extract header product '{}' at index {}", Name(), headerName, index);
+            break;
+        }
         auto payloadProduct = dpm->extractProduct(payloadName);
+        if (!payloadProduct) {
+            spdlog::error("[{}] Failed to extract payload product '{}' at index {}", Name(), payloadName, index);
+            break;
+        }
         auto footerProduct = dpm->extractProduct(footerName);
-
-        if (!headerProduct || !payloadProduct || !footerProduct) {
-            spdlog::error("[{}] Failed to extract all components for index {}", Name(), index);
+        if (!footerProduct) {
+            spdlog::error("[{}] Failed to extract footer product '{}' at index {}", Name(), footerName, index);
             break;
         }
 
         auto headerPtr = dynamic_cast<dataProducts::NaluPacketHeader*>(headerProduct->getObject());
+        if (!headerPtr) {
+            spdlog::error("[{}] Failed to cast header product '{}' to NaluPacketHeader* at index {}", Name(), headerName, index);
+            break;
+        }
         auto payloadPtr = dynamic_cast<dataProducts::NaluPacketPayload*>(payloadProduct->getObject());
+        if (!payloadPtr) {
+            spdlog::error("[{}] Failed to cast payload product '{}' to NaluPacketPayload* at index {}", Name(), payloadName, index);
+            break;
+        }
         auto footerPtr = dynamic_cast<dataProducts::NaluPacketFooter*>(footerProduct->getObject());
-
-        if (!headerPtr || !payloadPtr || !footerPtr) {
-            spdlog::error("[{}] Type mismatch or null pointer during cast at index {}", Name(), index);
+        if (!footerPtr) {
+            spdlog::error("[{}] Failed to cast footer product '{}' to NaluPacketFooter* at index {}", Name(), footerName, index);
             break;
         }
 
@@ -77,6 +99,5 @@ void NaluPacketCollectionFormingStage::Process() {
 
     dpm->addOrUpdate(outputName_, std::move(product));
 
-    spdlog::debug("[{}] Formed {} NaluPacket(s) into '{}'",
-              Name(), packetCount, outputName_);
+    spdlog::debug("[{}] Formed {} NaluPacket(s) into '{}'", Name(), packetCount, outputName_);
 }
