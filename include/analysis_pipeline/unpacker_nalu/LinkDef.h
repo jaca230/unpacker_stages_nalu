@@ -6,5 +6,7 @@
 
 #pragma link C++ class NaluEventFormingStage+;
 #pragma link C++ class NaluPacketCollectionFormingStage+;
+#pragma link C++ class ByteStreamToNaluPacketCollectionStage+;
+
 
 #endif
