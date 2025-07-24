@@ -20,10 +20,6 @@ void ByteStreamToNaluPacketCollectionStage::OnInit() {
     repeat_count_product_name_ = parameters_.value("repeat_count_product_name", "NaluEventHeader");
     repeat_count_product_member_ = parameters_.value("repeat_count_product_member", "num_packets");
 
-    header_parser_ = std::make_unique<ReflectionBasedParser>("dataProducts::NaluPacketHeader", endianness_);
-    payload_parser_ = std::make_unique<ReflectionBasedParser>("dataProducts::NaluPacketPayload", endianness_);
-    footer_parser_ = std::make_unique<ReflectionBasedParser>("dataProducts::NaluPacketFooter", endianness_);
-
     spdlog::info("[{}] Initialized with endianness '{}', output='{}', repeat_count source = '{}.{}'",
                  Name(), endianness_, output_name_, repeat_count_product_name_, repeat_count_product_member_);
 }

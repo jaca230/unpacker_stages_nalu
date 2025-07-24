@@ -18,9 +18,6 @@ public:
     std::string Name() const override { return "ByteStreamToNaluPacketCollectionStage"; }
 
 private:
-    std::unique_ptr<ReflectionBasedParser> header_parser_;
-    std::unique_ptr<ReflectionBasedParser> payload_parser_;
-    std::unique_ptr<ReflectionBasedParser> footer_parser_;
 
     std::string endianness_ = "little";
     std::string output_name_ = "NaluPacketCollection";
