@@ -66,6 +66,8 @@ void NaluPacketCollectionFormingStage::Process() {
         return;
     }
 
+    size_t packetCount = packetCollection->GetPackets().size();
+
     auto product = std::make_unique<PipelineDataProduct>();
     product->setName(outputName_);
     product->setObject(std::move(packetCollection));
@@ -76,5 +78,5 @@ void NaluPacketCollectionFormingStage::Process() {
     dpm->addOrUpdate(outputName_, std::move(product));
 
     spdlog::debug("[{}] Formed {} NaluPacket(s) into '{}'",
-                  Name(), packetCollection->GetPackets().size(), outputName_);
+              Name(), packetCount, outputName_);
 }
