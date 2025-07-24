@@ -96,6 +96,10 @@ void ByteStreamToNaluPacketCollectionStage::Process() {
     constexpr size_t header_size = sizeof(dataProducts::NaluPacketHeader);
     constexpr size_t payload_size = sizeof(dataProducts::NaluPacketPayload);
     constexpr size_t footer_size = sizeof(dataProducts::NaluPacketFooter);
+
+    spdlog::debug("[{}] header_size = {}, payload_size = {}, footer_size = {}, total packet_size = {}",
+              Name(), header_size, payload_size, footer_size,
+              header_size + payload_size + footer_size);
     const size_t packet_size = header_size + payload_size + footer_size;
 
     for (int i = 0; i < repeat_count; ++i) {
