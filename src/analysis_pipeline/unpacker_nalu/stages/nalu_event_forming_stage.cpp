@@ -77,6 +77,8 @@ void NaluEventFormingStage::Process() {
     event.footer = std::move(*footerPtr);
     event.packets = std::move(*packetsCollectionPtr);
 
+    event.BuildWaveformsFromPackets();
+
     auto product = std::make_unique<PipelineDataProduct>();
     product->setName(outputName_);
     product->setObject(std::make_unique<dataProducts::NaluEvent>(std::move(event)));
