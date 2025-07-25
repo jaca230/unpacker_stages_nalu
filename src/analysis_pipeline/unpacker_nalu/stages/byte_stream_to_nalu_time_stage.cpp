@@ -21,7 +21,7 @@ void ByteStreamToNaluTimeStage::OnInit() {
 void ByteStreamToNaluTimeStage::Process() {
     auto input_lock = getInputByteStreamLock();
     if (!input_lock) {
-        spdlog::warn("[{}] Could not lock ByteStream '{}'", Name(), input_byte_stream_product_name_);
+        spdlog::debug("[{}] Could not lock ByteStream '{}'", Name(), input_byte_stream_product_name_);
         return;
     }
 
