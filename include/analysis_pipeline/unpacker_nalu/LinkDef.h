@@ -4,9 +4,8 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class NaluEventFormingStage+;
-#pragma link C++ class NaluPacketCollectionFormingStage+;
-#pragma link C++ class ByteStreamToNaluPacketCollectionStage+;
+#pragma link C++ class ByteStreamToNaluEventStage+;
+#pragma link C++ class ByteStreamToNaluTimeStage+;
 
 
 #endif
