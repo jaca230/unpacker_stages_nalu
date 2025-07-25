@@ -15,7 +15,7 @@ ByteStreamToNaluTimeStage::ByteStreamToNaluTimeStage() = default;
 void ByteStreamToNaluTimeStage::OnInit() {
     ByteStreamProcessorStage::OnInit();
     output_product_name_ = parameters_.value("output_product_name", "NaluTime");
-    spdlog::info("[{}] Initialized with output product name '{}'", Name(), output_product_name_);
+    spdlog::debug("[{}] Initialized with output product name '{}'", Name(), output_product_name_);
 }
 
 void ByteStreamToNaluTimeStage::Process() {

@@ -20,7 +20,7 @@ void ByteStreamToNaluEventStage::OnInit() {
     ByteStreamProcessorStage::OnInit();
 
     output_product_name_ = parameters_.value("output_product_name", "NaluEvent");
-    spdlog::info("[{}] Initialized with output product name '{}'", Name(), output_product_name_);
+    spdlog::debug("[{}] Initialized with output product name '{}'", Name(), output_product_name_);
 }
 
 void ByteStreamToNaluEventStage::Process() {
