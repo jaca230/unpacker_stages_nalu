@@ -8,4 +8,7 @@
 #pragma link C++ class ByteStreamToNaluTimeStage+;
 
 
+#pragma link C++ class ByteStreamToNaluBuilderEventStage+;
+#pragma link C++ class ByteStreamToNaluCollectionTimingStage+;
+#pragma link C++ class ByteStreamToNaluSelectionSummaryStage+;
 #endif
