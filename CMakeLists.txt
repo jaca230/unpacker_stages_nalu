@@ -190,3 +190,11 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   )
 endif()
+
+option(NALU_BUILDER_TESTS "Build HDSoC event-builder decoder tests" OFF)
+if(NALU_BUILDER_TESTS)
+  enable_testing()
+  add_executable(nalu_builder_decoder_tests tests/builder_bank_decoder_tests.cpp)
+  target_link_libraries(nalu_builder_decoder_tests PRIVATE ${PROJECT_NAME})
+  add_test(NAME nalu_builder_decoder_tests COMMAND nalu_builder_decoder_tests)
+endif()
